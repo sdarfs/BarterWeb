@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.title }}{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <!-- Изображение -->
+                <div class="text-center">
+                    {% if product.image_url %}
+                        <img src="{{ product.image_url }}" class="card-img-top img-fluid" alt="{{ product.title }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/800x400?text=No+Image" class="card-img-top img-fluid" alt="No Image">
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    <!-- Название -->
+                    <h3 class="card-title">{{ product.title }}</h3>
+
+                    <!-- Описание -->
+                    <p class="card-text">{{ product.description }}</p>
+
+                    <!-- Категория и состояние -->
+                    <p class="card-text">
+                        <strong>Категория:</strong> {{ product.category }}<br>
+                        <strong>Состояние:</strong> {{ product.get_condition_display }}<br>
+                        <strong>Автор:</strong> {{ product.user }}
+                    </p>
+
+                    <!-- Дата создания -->
+                    <p class="card-text">
+                        <small class="text-muted">
+                            Опубликовано: {{ product.created_at|date:"d.m.Y H:i" }}
+                        </small>
+                    </p>
+
+                    <!-- Кнопки редактирования и удаления для автора объявления -->
+                    {% if user.is_authenticated and product.user == user %}
+                        <div class="d-flex gap-2 mb-3">
+                            <a href="{% url 'edit_page' product.id %}" class="btn btn-warning">Редактировать</a>
+                            <form action="{% url 'delete_page' product.id %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить это объявление?');">
+                                    Удалить
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+
+                    <!-- Форма для предложения обмена -->
+                    {% if user.is_authenticated and product.user != user %}
+                        <div class="mt-4">
+                            <h5 class="mb-3">Предложить обмен</h5>
+                            {% if user_ads %}
+                                <form method="post" action="{% url 'create_exchange' %}" class="needs-validation" novalidate>
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="ad_sender_id" class="form-label">Выберите свое объявление:</label>
+                                        <select name="ad_sender_id" id="ad_sender_id" class="form-select" required>
+                                            <option value="">-- Выберите объявление --</option>
+                                            {% for ad in user_ads %}
+                                                <option value="{{ ad.id }}">{{ ad.title }} ({{ ad.get_category_display }} | {{ ad.get_condition_display }})</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="comment" class="form-label">Комментарий:</label>
+                                        <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Введите комментарий" required></textarea>
+                                    </div>
+                                    <input type="hidden" name="ad_receiver_id" value="{{ product.id }}">
+                                    <button type="submit" class="btn btn-primary">Отправить предложение</button>
+                                </form>
+                            {% else %}
+                                <p class="text-muted">
+                                    У вас нет объявлений для обмена.
+                                    <a href="{% url 'create_ad' %}" class="text-decoration-none">Создайте объявление</a>, чтобы начать обмен.
+                                </p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Подвал карточки -->
+                <div class="card-footer text-center">
+                    <a href="{% url 'products' %}" class="text-decoration-none">Вернуться к списку объявлений</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

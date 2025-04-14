@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Профиль пользователя</h3>
+                </div>
+                <div class="card-body text-center">
+                    {% if user_profile.profile.avatar %}
+                        <img src="{{ user_profile.profile.avatar.url }}" alt="Аватар" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
+                    {% else %}
+                        <img src="https://via.placeholder.com/150" alt="Аватар по умолчанию" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
+                    {% endif %}
+                    <h4>{{ user_profile.username }}</h4>
+                    <p><strong>Email:</strong> {{ user_profile.email }}</p>
+                    <p><strong>Зарегистрирован:</strong> {{ user_profile.date_joined|date:"d.m.Y" }}</p>
+                    {% if user_profile.profile.bio %}
+                        <p><strong>О себе:</strong> {{ user_profile.profile.bio }}</p>
+                    {% else %}
+                        <p><em>Пользователь не добавил информацию о себе.</em></p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5>Мои объявления</h5>
+                </div>
+                <div class="card-body">
+                    {% if ads %}
+                        <ul class="list-group">
+                            {% for ad in ads %}
+                                <li class="list-group-item">
+                                    <a href="{% url 'product_detail' ad.id %}">{{ ad.title }}</a>
+                                    <small class="text-muted">({{ ad.created_at|date:"d.m.Y" }})</small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>У вас пока нет объявлений.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

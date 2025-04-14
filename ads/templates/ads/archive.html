@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Архив объявлений{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2>Архивированные объявления</h2>
+            {% if archived_products %}
+                <div class="row">
+                    {% for product in archived_products %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <!-- Изображение -->
+                                {% if product.image_url %}
+                                    <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.title }}">
+                                {% else %}
+                                    <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top" alt="No Image">
+                                {% endif %}
+                                <div class="card-body">
+                                    <!-- Название -->
+                                    <h5 class="card-title">{{ product.title }}</h5>
+                                    <!-- Описание -->
+                                    <p class="card-text">{{ product.description|truncatewords:15 }}</p>
+                                    <!-- Категория и состояние -->
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            Категория: {{ product.category }} | Состояние: {{ product.get_condition_display }}
+                                        </small>
+                                    </p>
+                                    <!-- Дата создания -->
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            Опубликовано: {{ product.created_at|date:"d.m.Y H:i" }}
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center">У вас нет архивированных объявлений.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

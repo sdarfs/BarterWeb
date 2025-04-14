@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <!-- Заголовок карточки -->
+                <div class="card-header bg-primary text-white">
+                    <h3 class="text-center">Создать новое объявление</h3>
+                </div>
+
+                <!-- Тело карточки -->
+                <div class="card-body">
+                    {% if user.is_authenticated %}
+                        <!-- Форма для авторизованных пользователей -->
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <!-- Общие ошибки формы -->
+                            <div class="form-error text-danger">{{ form.non_field_errors }}</div>
+
+                            <!-- Поля формы -->
+                            {% for f in form %}
+                                <div class="mb-3">
+                                    <label class="form-label" for="{{ f.id_for_label }}">{{ f.label }}</label>
+                                    {{ f }}
+                                    <div class="form-error text-danger">{{ f.errors }}</div>
+                                </div>
+                            {% endfor %}
+
+                            <!-- Кнопка отправки -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Опубликовать объявление</button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <!-- Сообщение для неавторизованных пользователей -->
+                        <p class="text-center">
+                            Для создания объявления необходимо
+                            <a href="{% url 'users:login' %}" class="text-decoration-none">войти</a>
+                            или <a href="{% url 'users:register' %}" class="text-decoration-none">зарегистрироваться</a>.
+                        </p>
+                    {% endif %}
+                </div>
+
+                <!-- Подвал карточки -->
+                <div class="card-footer text-center">
+                    <a href="{% url 'products' %}" class="text-decoration-none">Вернуться к списку объявлений</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

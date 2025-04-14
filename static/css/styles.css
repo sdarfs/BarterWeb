@@ -1,0 +1,57 @@
+/* styles.css */
+:root {
+    --primary-gradient: linear-gradient(135deg, #fffbe2 0%, #d2f6ae 100%);
+    --secondary-gradient: linear-gradient(135deg, rgba(255, 154, 158, 0.75) 0%, rgba(250, 208, 196, 0.56) 100%);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    background: #f0f2f5;
+}
+
+.navbar {
+    background: var(--primary-gradient);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.btn-custom {
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 25px;
+    padding: 10px 30px;
+    transition: 0.3s;
+}
+
+.btn-custom:hover {
+    box-shadow: 0 0 20px rgba(55, 255, 41, 0.5);
+}
+
+.footer {
+    background: #1a1a1a;
+    color: white;
+    padding: 2rem 0;
+    margin-top: 4rem;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: #f4f0c7;
+    transition: 0.3s;
+}
+
+.feature-icon:hover {
+    transform: scale(1.1);
+    color: rgba(167, 244, 184, 0.75);
+}

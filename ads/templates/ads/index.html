@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <!-- Приветственное сообщение -->
+            <div class="text-center mb-4">
+                <h1>Добро пожаловать на платформу бартера!</h1>
+                <p>Здесь вы можете обмениваться вещами с другими пользователями.</p>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'create_ad' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Создать объявление
+                    </a>
+                {% else %}
+                    <p>
+                        Чтобы создать объявление,
+                        <a href="{% url 'users:login' %}" class="text-decoration-none">Войдите</a>
+                        или <a href="{% url 'users:register' %}" class="text-decoration-none">Зарегистрируйтесь</a>.
+                    </p>
+                {% endif %}
+            </div>
+
+            <hr>
+
+            <!-- Форма фильтрации -->
+            <form method="get" class="mb-4">
+                <div class="row g-3">
+                    <!-- Поиск по ключевым словам -->
+                    <div class="col-md-4">
+                        <input type="text" name="q" class="form-control" placeholder="Поиск по названию или описанию" value="{{ request.GET.q|default:'' }}">
+                    </div>
+
+                    <!-- Фильтр по категории -->
+                    <div class="col-md-4">
+                        <select name="category" class="form-select">
+                            <option value="">Все категории</option>
+                            {% for category in categories %}
+                                <option value="{{ category.0 }}" {% if request.GET.category|default:'' == category.0 %}selected{% endif %}>
+                                    {{ category.1 }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Фильтр по состоянию товара -->
+                    <div class="col-md-4">
+                        <select name="condition" class="form-select">
+                            <option value="">Любое состояние</option>
+                            <option value="new" {% if request.GET.condition|default:'' == 'new' %}selected{% endif %}>Новый</option>
+                            <option value="used" {% if request.GET.condition|default:'' == 'used' %}selected{% endif %}>Б/у</option>
+                        </select>
+                    </div>
+
+                    <!-- Кнопка "Применить" -->
+                    <div class="col-md-12 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel"></i> Применить фильтр
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Список объявлений -->
+            <h2 class="mb-4">Новые объявления</h2>
+            {% if products %}
+                <div class="row">
+                    {% for product in products %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <!-- Изображение -->
+                                <div class="text-center">
+                                    {% if product.image_url %}
+                                        <img src="{{ product.image_url }}" class="card-img-top img-fluid" alt="{{ product.title }}">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/800x400?text=No+Image" class="card-img-top img-fluid" alt="No Image">
+                                    {% endif %}
+                                </div>
+
+                                <div class="card-body">
+                                    <!-- Название -->
+                                    <h5 class="card-title">{{ product.title }}</h5>
+
+                                    <!-- Описание -->
+                                    <p class="card-text">{{ product.description|truncatewords:15 }}</p>
+
+                                    <!-- Категория и состояние -->
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            Категория: {{ product.category }} | Состояние: {{ product.get_condition_display }}
+                                        </small>
+                                    </p>
+
+                                    <!-- Дата создания -->
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock"></i> Опубликовано: {{ product.created_at|date:"d.m.Y H:i" }}
+                                        </small>
+                                    </p>
+
+                                    <!-- Кнопка "Подробнее" -->
+                                    <a href="{% url 'product_detail' product.id %}" class="btn btn-primary">
+                                        <i class="bi bi-eye"></i> Подробнее
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info text-center" role="alert">
+                    Пока нет объявлений.
+                </div>
+            {% endif %}
+
+            <!-- Пагинация -->
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.condition %}&condition={{ request.GET.condition }}{% endif %}">
+                                <i class="bi bi-arrow-left"></i> Назад
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_obj.number }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.condition %}&condition={{ request.GET.condition }}{% endif %}">
+                                Вперед <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
